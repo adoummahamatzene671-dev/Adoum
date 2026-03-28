@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>An-Nour | Espace de Dhikr - Compteur spirituel</title>
+    <!-- Fonts élégantes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fdf9f4;
+            font-family: 'Inter', sans-serif;
+            color: #2b241c;
+            line-height: 1.5;
+        }
+
+        /* fond apaisant avec texture légère */
+        .bg-soft {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 30% 50%, rgba(200, 170, 130, 0.03) 1.5%, transparent 2%),
+                              radial-gradient(circle at 80% 70%, rgba(150, 110, 70, 0.02) 1.2%, transparent 1.8%);
+            background-size: 50px 50px, 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 1.8rem 1.5rem 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* header spirituel */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(180, 140, 100, 0.2);
+        }
+        .logo {
+            font-family: 'Amiri', serif;
+            font-size: 2.6rem;
+            font-weight: 500;
+            color: #aa7c54;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo i {
+            font-size: 2rem;
+            color: #c49a6c;
+        }
+        .sub {
+            font-size: 0.85rem;
+            color: #9b846c;
+            background: rgba(255, 245, 235, 0.7);
+            display: inline-block;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            margin-top: 0.6rem;
+            backdrop-filter: blur(2px);
+        }
+
+        /* intro */
+        .intro {
+            text-align: center;
+            max-width: 580px;
+            margin: 0 auto 2rem auto;
+            background: rgba(255, 250, 240, 0.6);
+            padding: 0.8rem 1.5rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            color: #6f5842;
+            backdrop-filter: blur(2px);
+        }
+
+        /* navigation catégories */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 2.5rem;
+        }
+        .cat-btn {
+            background: #ffffffcc;
+            backdrop-filter: blur(4px);
+            border: 1px solid #e2cfbc;
+            padding: 0.6rem 1.4rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #5c4532;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Amiri', serif;
+        }
+        .cat-btn i {
+            font-size: 1rem;
+            color: #b87c4e;
+        }
+        .cat-btn.active {
+            background: #dbbc97;
+            border-color: #b88755;
+            color: white;
+            box-shadow: 0 5px 12px rgba(160, 100, 40, 0.15);
+        }
+        .cat-btn.active i {
+            color: white;
+        }
+        .cat-btn:hover:not(.active) {
+            background: #f3ede5;
+            border-color: #c9ae8a;
+            transform: translateY(-2px);
+        }
+
+        /* panneau principal du dhikr */
+        .dhikr-panel {
+            background: rgba(255, 252, 248, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(210, 180, 140, 0.25);
+            transition: all 0.2s;
+        }
+
+        .category-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #4f3822;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eedbcb;
+            padding-bottom: 0.7rem;
+            margin-bottom: 1.5rem;
+        }
+        .progress-info {
+            font-size: 0.8rem;
+            background: #f3e9df;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-family: monospace;
+            color: #9b7656;
+        }
+
+        /* carte dhikr */
+        .dhikr-card {
+            background: #fffaf4;
+            border-radius: 40px;
+            padding: 1.8rem 1.5rem;
+            margin: 1rem 0 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,240,0.8);
+        }
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 1.9rem;
+            line-height: 1.5;
+            color: #2d241a;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            word-break: break-word;
+        }
+        .translation {
+            font-size: 0.85rem;
+            color: #8f745a;
+            font-style: italic;
+            max-width: 90%;
+            margin: 0.5rem auto 0;
+            border-top: 1px dashed #eedbcb;
+            padding-top: 0.8rem;
+        }
+        .counter-section {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 1.2rem 0;
+        }
+        .counter-badge {
+            background: #fff1e6;
+            padding: 0.3rem 1.5rem;
+            border-radius: 60px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: #b87c4e;
+            min-width: 120px;
+            text-align: center;
+            letter-spacing: 2px;
+            box-shadow: inset 0 1px 2px #0001, 0 2px 4px #fff4;
+        }
+        .btn-counter {
+            background: #e9dfd3;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.15s;
+            color: #4e3a28;
+        }
+        .btn-decrement {
+            background: #e0cfbe;
+            color: #6b4c2e;
+        }
+        .btn-decrement:active {
+            transform: scale(0.96);
+        }
+        .btn-reset {
+            background: #f5e9de;
+            border: 1px solid #d4bb9b;
+        }
+        .next-info {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #b28960;
+        }
+        .completed-message {
+            background: #e8d9cb;
+            border-radius: 36px;
+            padding: 2rem;
+            text-align: center;
+            color: #6a4e32;
+        }
+        .fade-transition {
+            animation: gentleFade 0.3s ease-out;
+        }
+        @keyframes gentleFade {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        @media (max-width: 680px) {
+            .arabic-text { font-size: 1.4rem; }
+            .counter-badge { font-size: 1.6rem; min-width: 90px; }
+            .dhikr-panel { padding: 1.2rem; }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #cbb69b;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-soft"></div>
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-hand-peace"></i>
+            <span>An-Nour · Le Rappel</span>
+        </div>
+        <div class="sub"><i class="fas fa-spa"></i> Espace de dhikr — chaque invocation diminue vers l'illumination</div>
+    </div>
+    <div class="intro">
+        <i class="fas fa-heart" style="color:#c49a6c;"></i> Sélectionne une catégorie. Pour chaque dhikr, clique pour diminuer le compteur jusqu'à zéro : alors il se ferme et laisse place à l'invocation suivante.
+    </div>
+
+    <!-- barre catégories dynamique -->
+    <div class="categories" id="categoriesContainer"></div>
+
+    <!-- zone principale dhikr -->
+    <div class="dhikr-panel" id="dhikrPanel">
+        <div class="category-title" id="categoryTitle">
+            <span><i class="fas fa-praying-hands"></i> <span id="currentCatName">أذكار الصباح</span></span>
+            <span class="progress-info" id="progressText"></span>
+        </div>
+        <div id="dhikrDynamicContent">
+            <!-- contenu généré dynamiquement -->
+        </div>
+    </div>
+    <div class="footer">
+        <i class="fas fa-moon-stars"></i> Que chaque souffle soit rappel — comptage régressif vers la sérénité
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // DONNÉES COMPLÈTES DES DHIKR (MATIN ÉTOFFÉ & AUTRES)
+    // basé sur l'esprit du fichier image et des azkhar authentiques
+    // Chaque dhikr possède un compteur à atteindre (valeur initiale)
+    // ============================================================
+    
+    const zikrLibrary = {
+        "أذكار الصباح": {
+            icon: "fa-sun",
+            dhikrs: [
+                { arabic: "اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ", translation: "Seigneur, c'est par Toi que nous vivons le matin, par Toi le soir, par Toi nous vivons et mourons, et vers Toi est la résurrection.", count: 1 },
+                { arabic: "أَصْبَحْنَا عَلَى فِطْرَةِ الإِسْلاَمِ وَكَلِمَةِ الإِخْلاَصِ", translation: "Nous avons commencé ce matin sur la nature primordiale de l'Islam et la parole de sincérité.", count: 1 },
+                { arabic: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", translation: "Gloire et louange à Allah — à répéter 100 fois (compteur régressif)", count: 100 },
+                { arabic: "لا إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", translation: "Nulle divinité si ce n'est Allah, Unique, sans associé ; à Lui la royauté et à Lui la louange, et Il est sur toute chose Puissant.", count: 10 },
+                { arabic: "اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ", translation: "Seigneur, prie et accorde la paix sur notre Prophète Muhammad.", count: 10 },
+                { arabic: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", translation: "Je demande pardon à Allah et je me repens vers Lui.", count: 3 }
+            ]
+        },
+        "أذكار المساء": {
+            icon: "fa-moon",
+            dhikrs: [
+                { arabic: "اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ", translation: "Seigneur, c'est par Toi que nous vivons le soir, par Toi le matin, par Toi nous vivons et mourons, et vers Toi est le devenir.", count: 1 },
+                { arabic: "آيَةُ الْكُرْسِيِّ", translation: "Le verset du Trône (2:255) — réciter une fois le soir.", count: 1 },
+                { arabic: "سُبْحَانَ اللَّهِ (٣٣) الْحَمْدُ لِلَّهِ (٣٣) اللَّهُ أَكْبَرُ (٣٤)", translation: "33× SubhanAllah, 33× Alhamdulillah, 34× Allahu Akbar", count: 33 }
+            ]
+        },
+        "أذكار المسجد": {
+            icon: "fa-mosque",
+            dhikrs: [
+                { arabic: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ", translation: "Seigneur, ouvre-moi les portes de Ta miséricorde (entrée).", count: 1 },
+                { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ", translation: "Seigneur, je Te demande de Ta grâce (sortie).", count: 1 },
+                { arabic: "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلا إِلَهَ إِلاَّ اللَّهُ وَاللَّهُ أَكْبَرُ", translation: "Gloire à Allah, louange à Allah, point de divinité excepté Allah, Allah est le Plus Grand.", count: 7 }
+            ]
+        },
+        "أذكار الإستيقاظ": {
+            icon: "fa-bed",
+            dhikrs: [
+                { arabic: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", translation: "Louange à Allah qui nous a rendus à la vie après nous avoir fait mourir, et vers Lui est la résurrection.", count: 1 },
+                { arabic: "لا إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لا شَرِيكَ لَهُ", translation: "Nulle divinité si ce n'est Allah, Unique, sans associé.", count: 3 }
+            ]
+        },
+        "أذكار النوم": {
+            icon: "fa-cloud-moon",
+            dhikrs: [
+                { arabic: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", translation: "C'est par Ton nom, Seigneur, que je meurs et que je vis.", count: 1 },
+                { arabic: "اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ", translation: "Seigneur, préserve-moi de Ton châtiment le jour où Tu ressusciteras Tes serviteurs.", count: 1 },
+                { arabic: "سُبْحَانَ اللَّهِ (٣٣) الْحَمْدُ لِلَّهِ (٣٣) اللَّهُ أَكْبَرُ (٣٤)", translation: "33× SubhanAllah, 33× Alhamdulillah, 34× Allahu Akbar", count: 33 }
+            ]
+        },
+        "أذكار الصلاة": {
+            icon: "fa-praying-hands",
+            dhikrs: [
+                { arabic: "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَى جَدُّكَ وَلا إِلَهَ غَيْرُكَ", translation: "Gloire et louange à Toi, Seigneur, béni soit Ton nom, exaltée Ta majesté, nulle divinité autre que Toi.", count: 1 },
+                { arabic: "أَسْتَغْفِرُ اللَّهَ رَبِّ اغْفِرْ لِي", translation: "Je demande pardon à Allah — Seigneur pardonne-moi.", count: 3 },
+                { arabic: "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ", translation: "Seigneur, aide-moi à T'invoquer, Te remercier et bien T'adorer.", count: 1 }
+            ]
+        }
+    };
+
+    // Ordre des catégories
+    const categoriesOrder = [
+        "أذكار الصباح",
+        "أذكار المساء",
+        "أذكار المسجد",
+        "أذكار الإستيقاظ",
+        "أذكار النوم",
+        "أذكار الصلاة"
+    ];
+
+    // État global
+    let currentCategory = "أذكار الصباح";
+    let currentDhikrIndex = 0;
+    let currentDhikrRemaining = 0;      // compteur restant pour le dhikr actuel
+    let dhikrsList = [];                // liste des objets dhikr de la catégorie active
+
+    // DOM elements
+    const categoriesContainer = document.getElementById("categoriesContainer");
+    const dhikrDynamicContent = document.getElementById("dhikrDynamicContent");
+    const currentCatNameSpan = document.getElementById("currentCatName");
+    const progressTextSpan = document.getElementById("progressText");
+
+    // Helper: sauvegarde de l'état local
+    function saveState() {
+        // on sauvegarde dans sessionStorage pour persistance légère (rafraîchissement doux)
+        sessionStorage.setItem("dhikr_state", JSON.stringify({
+            currentCategory,
+            currentDhikrIndex,
+            currentDhikrRemaining,
+            dhikrsList: dhikrsList.map(d => ({ ...d, count: d.count })) // préserver les compteurs modifiés
+        }));
+    }
+
+    function loadState() {
+        const saved = sessionStorage.getItem("dhikr_state");
+        if (!saved) return false;
+        try {
+            const state = JSON.parse(saved);
+            if (state.currentCategory && zikrLibrary[state.currentCategory]) {
+                currentCategory = state.currentCategory;
+                currentDhikrIndex = state.currentDhikrIndex;
+                currentDhikrRemaining = state.currentDhikrRemaining;
+                // recharger la liste des dhikrs depuis la librairie mais avec compteurs modifiés
+                const originalList = zikrLibrary[currentCategory].dhikrs.map(d => ({ ...d, count: d.count }));
+                if (state.dhikrsList && state.dhikrsList.length === originalList.length) {
+                    dhikrsList = state.dhikrsList.map((item, idx) => {
+                        return { ...item, count: item.count };
+                    });
+                } else {
+                    dhikrsList = originalList;
+                }
+                // Vérifier cohérence index
+                if (currentDhikrIndex >= dhikrsList.length) currentDhikrIndex = 0;
+                if (currentDhikrRemaining === undefined && dhikrsList[currentDhikrIndex]) {
+                    currentDhikrRemaining = dhikrsList[currentDhikrIndex].count;
+                }
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    // Initialiser ou réinitialiser la catégorie (sans perdre l'état sauf si reset forcé)
+    function initCategory(cat, keepStateIfSame = true) {
+        if (!zikrLibrary[cat]) return;
+        // Si on change de catégorie, on recharge totalement
+        const categoryChanged = (currentCategory !== cat);
+        if (categoryChanged) {
+            currentCategory = cat;
+            // récupérer la liste originale
+            dhikrsList = zikrLibrary[cat].dhikrs.map(d => ({ ...d, count: d.count }));
+            currentDhikrIndex = 0;
+            if (dhikrsList.length) currentDhikrRemaining = dhikrsList[0].count;
+            else currentDhikrRemaining = 0;
+        } else {
+            // même catégorie, mais on veut s'assurer que la liste est bien à jour
+            if (!dhikrsList.length || dhikrsList.length !== zikrLibrary[cat].dhikrs.length) {
+                dhikrsList = zikrLibrary[cat].dhikrs.map(d => ({ ...d, count: d.count }));
+                if (currentDhikrIndex >= dhikrsList.length) currentDhikrIndex = 0;
+                if (dhikrsList[currentDhikrIndex]) currentDhikrRemaining = dhikrsList[currentDhikrIndex].count;
+            }
+        }
+        // Mise à jour UI
+        updateUI();
+        saveState();
+    }
+
+    // Afficher le dhikr actuel + gestion compteur
+    function updateUI() {
+        if (!dhikrsList.length) {
+            dhikrDynamicContent.innerHTML = `<div class="completed-message"><i class="fas fa-check-circle"></i> Aucune invocation disponible pour cette catégorie.</div>`;
+            progressTextSpan.innerText = "0/0";
+            currentCatNameSpan.innerText = currentCategory;
+            return;
+        }
+
+        const total = dhikrsList.length;
+        const currentItem = dhikrsList[currentDhikrIndex];
+        if (!currentItem) {
+            // sécurité: passage au suivant
+            moveToNextDhikr();
+            return;
+        }
+
+        // Mise à jour nom catégorie et progression
+        currentCatNameSpan.innerText = currentCategory;
+        progressTextSpan.innerText = `Invocation ${currentDhikrIndex+1}/${total} · reste: ${currentDhikrRemaining}`;
+
+        // Génération du contenu
+        let content = `
+            <div class="fade-transition">
+                <div class="dhikr-card">
+                    <div class="arabic-text">${currentItem.arabic}</div>
+                    <div class="translation"><i class="fas fa-feather-alt"></i> ${currentItem.translation}</div>
+                </div>
+                <div class="counter-section">
+                    <div class="counter-badge" id="counterDisplay">${currentDhikrRemaining}</div>
+                    <button class="btn-counter btn-decrement" id="decrementBtn"><i class="fas fa-minus-circle"></i> Diminuer (zikr)</button>
+                    <button class="btn-counter btn-reset" id="resetDhikrBtn"><i class="fas fa-sync-alt"></i> Réinitialiser ce dhikr</button>
+                </div>
+                <div class="next-info">
+                    <i class="fas fa-info-circle"></i> Chaque clic diminue le compteur. Lorsqu'il atteint 0, l'invocation se termine et la suivante apparaît.
+                </div>
+            </div>
+        `;
+        dhikrDynamicContent.innerHTML = content;
+
+        // Attacher événements
+        const decrementBtn = document.getElementById("decrementBtn");
+        const resetBtn = document.getElementById("resetDhikrBtn");
+
+        if (decrementBtn) {
+            decrementBtn.addEventListener("click", () => {
+                if (currentDhikrRemaining > 0) {
+                    currentDhikrRemaining--;
+                    // Mise à jour visuelle immédiate
+                    const counterSpan = document.getElementById("counterDisplay");
+                    if (counterSpan) counterSpan.innerText = currentDhikrRemaining;
+                    // Effet clic
+                    decrementBtn.style.transform = "scale(0.96)";
+                    setTimeout(() => { decrementBtn.style.transform = ""; }, 120);
+                    
+                    // Sauvegarder le nouvel état dans la liste principale
+                    if (dhikrsList[currentDhikrIndex]) {
+                        dhikrsList[currentDhikrIndex].count = currentDhikrRemaining;
+                    }
+                    
+                    // Si le compteur atteint zéro -> passer au dhikr suivant automatiquement
+                    if (currentDhikrRemaining === 0) {
+                        // Petite animation de fermeture élégante, puis passage suivant
+                        setTimeout(() => {
+                            moveToNextDhikr();
+                        }, 200);
+                    } else {
+                        updateProgressTextOnly(); // mettre à jour le texte de progression sans refaire tout le render
+                        saveState();
+                    }
+                } else {
+                    // déjà à zéro, on passe au suivant directement
+                    moveToNextDhikr();
+                }
+            });
+        }
+        
+        if (resetBtn) {
+            resetBtn.addEventListener("click", () => {
+                if (dhikrsList[currentDhikrIndex]) {
+                    const originalCount = zikrLibrary[currentCategory].dhikrs[currentDhikrIndex]?.count || 1;
+                    currentDhikrRemaining = originalCount;
+                    dhikrsList[currentDhikrIndex].count = originalCount;
+                    const counterSpan = document.getElementById("counterDisplay");
+                    if (counterSpan) counterSpan.innerText = currentDhikrRemaining;
+                    updateProgressTextOnly();
+                    saveState();
+                }
+            });
+        }
+    }
+    
+    function updateProgressTextOnly() {
+        const total = dhikrsList.length;
+        progressTextSpan.innerText = `Invocation ${currentDhikrIndex+1}/${total} · reste: ${currentDhikrRemaining}`;
+    }
+    
+    function moveToNextDhikr() {
+        // Vérifier si on est à la fin de la liste
+        if (currentDhikrIndex + 1 < dhikrsList.length) {
+            currentDhikrIndex++;
+            // recharger le compteur depuis la liste sauvegardée (qui a peut-être été modifié précédemment)
+            if (dhikrsList[currentDhikrIndex]) {
+                currentDhikrRemaining = dhikrsList[currentDhikrIndex].count;
+                // Si le compteur est déjà à 0 (cas rare) mais on force à récupérer le max original
+                if (currentDhikrRemaining <= 0) {
+                    const original = zikrLibrary[currentCategory].dhikrs[currentDhikrIndex]?.count || 1;
+                    currentDhikrRemaining = original;
+                    dhikrsList[currentDhikrIndex].count = original;
+                }
+            } else {
+                // fallback
+                const original = zikrLibrary[currentCategory].dhikrs[currentDhikrIndex]?.count || 1;
+                currentDhikrRemaining = original;
+                dhikrsList[currentDhikrIndex] = { ...zikrLibrary[currentCategory].dhikrs[currentDhikrIndex], count: original };
+            }
+            updateUI();
+            saveState();
+        } else {
+            // Tous les dhikrs sont terminés ! Afficher un message de félicitations
+            dhikrDynamicContent.innerHTML = `
+                <div class="completed-message fade-transition">
+                    <i class="fas fa-check-circle" style="font-size: 2.5rem; color: #b88755;"></i>
+                    <h3 style="margin: 1rem 0 0.5rem; font-family: 'Amiri';">✨ Toutes les invocations sont accomplies ✨</h3>
+                    <p>Que la paix et la lumière emplissent ton cœur. Reviens quand tu le souhaites ou réinitialise la catégorie.</p>
+                    <button id="resetCategoryBtn" class="btn-counter" style="margin-top: 1rem; background: #dbbc97;"><i class="fas fa-undo"></i> Réinitialiser cette catégorie</button>
+                </div>
+            `;
+            const resetCatBtn = document.getElementById("resetCategoryBtn");
+            if (resetCatBtn) {
+                resetCatBtn.addEventListener("click", () => {
+                    // Réinitialiser complètement la catégorie courante
+                    dhikrsList = zikrLibrary[currentCategory].dhikrs.map(d => ({ ...d, count: d.count }));
+                    currentDhikrIndex = 0;
+                    if (dhikrsList.length) currentDhikrRemaining = dhikrsList[0].count;
+                    updateUI();
+                    saveState();
+                });
+            }
+            progressTextSpan.innerText = `Complété ✓`;
+        }
+    }
+    
+    // Génération des boutons de catégories
+    function buildCategoryButtons() {
+        categoriesContainer.innerHTML = "";
+        categoriesOrder.forEach(cat => {
+            const btn = document.createElement("button");
+            btn.className = `cat-btn ${currentCategory === cat ? 'active' : ''}`;
+            const icon = zikrLibrary[cat]?.icon || "fa-book";
+            btn.innerHTML = `<i class="fas ${icon}"></i> ${cat}`;
+            btn.addEventListener("click", () => {
+                // Changer de catégorie
+                currentCategory = cat;
+                // Recharger complètement la catégorie
+                dhikrsList = zikrLibrary[cat].dhikrs.map(d => ({ ...d, count: d.count }));
+                currentDhikrIndex = 0;
+                if (dhikrsList.length) currentDhikrRemaining = dhikrsList[0].count;
+                else currentDhikrRemaining = 0;
+                updateUI();
+                saveState();
+                // Mettre à jour les classes actives
+                document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+            });
+            categoriesContainer.appendChild(btn);
+        });
+    }
+    
+    // tenter de charger un état précédent
+    const loaded = loadState();
+    if (!loaded) {
+        // initialisation par défaut avec les invocations du matin (conforme à l'image)
+        currentCategory = "أذكار الصباح";
+        dhikrsList = zikrLibrary["أذكار الصباح"].dhikrs.map(d => ({ ...d, count: d.count }));
+        currentDhikrIndex = 0;
+        if (dhikrsList.length) currentDhikrRemaining = dhikrsList[0].count;
+    } else {
+        // s'assurer que le compteur et l'index sont valides
+        if (!dhikrsList[currentDhikrIndex]) currentDhikrIndex = 0;
+        if (dhikrsList[currentDhikrIndex]) currentDhikrRemaining = dhikrsList[currentDhikrIndex].count;
+        else currentDhikrRemaining = 0;
+    }
+    
+    buildCategoryButtons();
+    updateUI();
+</script>
+</body>
+</html>
